@@ -31,7 +31,13 @@ snakeImages = bytearray([
 ])
 
 snake = thumby.Sprite(4, 4, snakeImages)
-snake.x = 2
-snake.y = 2
-thumby.display.drawSprite(snake)
-thumby.display.update()
+
+thumby.display.setFPS(1)
+
+while(True):
+    snake.x += 1
+    snake.y += 1
+    thumby.display.fill(1)
+    thumby.display.drawSprite(snake)
+    snake.setFrame(snake.currentFrame+1)
+    thumby.display.update()
