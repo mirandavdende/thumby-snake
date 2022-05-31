@@ -1,4 +1,13 @@
+import sys
+sys.path.insert(0, "/".join(__file__.split("/")[0:-1]))
+import menu
 import thumby
+
+def waitForKey():
+    while not (thumby.buttonA.pressed() or thumby.buttonB.pressed() or thumby.buttonU.pressed() or thumby.buttonD.pressed() or thumby.buttonL.pressed() or thumby.buttonR.pressed()):
+        pass
+    while (thumby.buttonA.pressed() or thumby.buttonB.pressed() or thumby.buttonU.pressed() or thumby.buttonD.pressed() or thumby.buttonL.pressed() or thumby.buttonR.pressed()):
+        pass
 
 # Show title screen
 
@@ -13,31 +22,72 @@ titleScreen = bytearray([
 title = thumby.Sprite(72, 40, titleScreen)
 thumby.display.drawSprite(title)
 thumby.display.update()
+waitForKey()
 
-# Wait for user input & fill canvas to black
+# Show the menu
 
-while not (thumby.buttonA.pressed() or thumby.buttonB.pressed() or thumby.buttonU.pressed() or thumby.buttonD.pressed() or thumby.buttonL.pressed() or thumby.buttonR.pressed()):
-    pass
+newGameSprite = thumby.Sprite(49, 8, bytearray([127,126,12,24,63,127,0,56,124,84,92,88,0,28,124,96,56,96,124,28,0,0,0,62,127,65,121,120,0,32,116,84,124,120,0,124,124,4,124,124,4,124,120,0,56,124,84,92,88]))
+optionsSprite = thumby.Sprite(36, 8, bytearray([62,127,65,65,127,62,0,252,252,36,60,24,0,63,127,68,0,125,125,0,56,124,68,124,56,0,124,124,4,124,120,0,88,92,116,52]))
+quitSprite    = thumby.Sprite(19,8, bytearray([62,127,65,97,255,190,0,60,124,64,124,124,0,125,125,0,63,127,68]))
 
-thumby.display.fill(1)
+controlsSprite        = thumby.Sprite(40, 8, bytearray([62,127,65,65,65,0,56,124,68,124,56,0,124,124,4,124,120,0,63,127,68,0,124,124,8,12,0,56,124,68,124,56,0,127,127,0,88,92,116,52]))
+controlDPadSprite     = thumby.Sprite(23, 8, bytearray([127,65,65,65,62,0,16,16,0,252,36,36,24,0,32,84,84,120,0,56,68,68,127]))
+controlSnakeSprite    = thumby.Sprite(48, 17, bytearray([0,0,0,0,0,0,0,0,127,64,64,64,0,56,84,84,24,0,126,5,0,63,68,0,0,0,32,84,84,120,0,124,4,4,120,0,56,68,68,127,0,0,0,126,17,17,17,126,144,168,168,72,0,126,136,0,112,168,168,48,0,112,168,168,48,0,248,16,24,0,0,0,144,168,168,72,0,248,8,8,240,0,64,168,168,240,0,254,32,80,136,0,112,168,168,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]))
+controlDiagonalSprite = thumby.Sprite(57, 17, bytearray([0,0,0,0,0,0,127,64,64,64,0,56,84,84,24,0,126,5,0,63,68,0,0,0,20,20,20,0,0,0,60,64,64,60,0,252,36,36,24,0,112,28,7,0,1,127,0,56,84,84,24,0,126,5,0,63,68,252,34,34,34,252,0,0,0,40,40,40,0,0,0,112,136,136,254,0,112,136,136,112,0,120,128,96,128,120,0,248,8,8,240,0,224,56,14,0,248,16,24,0,250,0,48,72,72,248,0,254,8,8,240,0,126,136,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0]))
 
-# Draw snake
+settings = {
+    "controls": 0
+}
 
-snakeImages = bytearray([
-    10,9,9,15,10,9,6,15,9,13,11,9,9,11,
-    13,9,15,2,4,15,15,4,2,15,11,11,9,9,
-    9,5,3,15,15,3,5,9,9,4,2,9,13,10,13,
-    15,9,9,10,15,9,7,3,1,0,2,1,7
-])
+def quitGame():
+    thumby.reset()
 
-snake = thumby.Sprite(4, 4, snakeImages)
+def getControlSetting():
+    global settings
+    return settings["controls"]
 
-thumby.display.setFPS(1)
+def setControlSetting(value):
+    global settings
+    settings["controls"] = value
 
-while(True):
-    snake.x += 1
-    snake.y += 1
+def optionsMenu():
+    menu.SettingsMenu([
+        menu.Setting(controlsSprite, getControlSetting, [
+            menu.Item(controlDPadSprite,     setControlSetting),
+            menu.Item(controlSnakeSprite,    setControlSetting),
+            menu.Item(controlDiagonalSprite, setControlSetting)
+        ])
+    ]).start()
+
+
+def startGame():
+    # fill canvas to white
     thumby.display.fill(1)
-    thumby.display.drawSprite(snake)
-    snake.setFrame(snake.currentFrame+1)
-    thumby.display.update()
+
+    # Snake image data is here
+    snakeImages = bytearray([
+        10,9,9,15,10,9,6,15,9,13,11,9,9,11,
+        13,9,15,2,4,15,15,4,2,15,11,11,9,9,
+        9,5,3,15,15,3,5,9,9,4,2,9,13,10,13,
+        15,9,9,10,15,9,7,3,1,0,2,1,7
+    ])
+    snake = thumby.Sprite(4, 4, snakeImages)
+
+    # Update every second
+    thumby.display.setFPS(1)
+
+    while(True):
+        snake.x += 1
+        snake.y += 1
+        thumby.display.fill(1)
+        thumby.display.drawSprite(snake)
+        snake.setFrame(snake.currentFrame+1)
+        thumby.display.update()
+
+
+while True:
+    menu.ListMenu([
+        menu.Item(newGameSprite, startGame),
+        menu.Item(optionsSprite, optionsMenu),
+        menu.Item(quitSprite,    quitGame)
+    ]).start()
