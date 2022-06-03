@@ -61,15 +61,12 @@ def optionsMenu():
 
 
 def startGame():
-    # fill canvas to white
-    thumby.display.fill(1)
-
     # Snake image data is here
     snakeImages = bytearray([
-        10,9,9,15,10,9,6,15,9,13,11,9,9,11,
-        13,9,15,2,4,15,15,4,2,15,11,11,9,9,
-        9,5,3,15,15,3,5,9,9,4,2,9,13,10,13,
-        15,9,9,10,15,9,7,3,1,0,2,1,7
+        5,6,6,0,5,6,9,0,6,2,4,6,6,4,2,6,
+        0,13,11,0,0,11,13,0,4,4,6,6,6,10,
+        12,0,0,12,10,6,6,11,13,6,2,5,2,0,
+        6,6,5,0,6,8,12,14,15,13,14,8
     ])
     snake = thumby.Sprite(4, 4, snakeImages)
 
@@ -79,7 +76,7 @@ def startGame():
     while(True):
         snake.x += 1
         snake.y += 1
-        thumby.display.fill(1)
+        thumby.display.fill(0)
         thumby.display.drawSprite(snake)
         snake.setFrame(snake.currentFrame+1)
         thumby.display.update()
