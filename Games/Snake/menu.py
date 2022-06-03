@@ -9,10 +9,8 @@ class Menu:
         self.menu = menu
 
     def _waitForNewKeyPress(self):
-        while thumby.buttonU.pressed() or thumby.buttonD.pressed() or thumby.buttonA.pressed() or thumby.buttonB.pressed():
-            pass
-        while not (thumby.buttonU.pressed() or thumby.buttonD.pressed() or thumby.buttonA.pressed() or thumby.buttonB.pressed()):
-            pass
+        while thumby.inputPressed(): pass
+        while not thumby.inputPressed(): pass
 
     def _drawScrollBar(self, pos, total):
         disp = thumby.display.display.buffer
@@ -113,11 +111,13 @@ class SettingsMenu(Menu):
         thumby.display.update()
 
 class Item:
+
     def __init__(self, sprite, function):
         self.sprite = sprite
         self.function = function
 
 class Setting:
+
     def __init__(self, sprite, function, options):
         self.sprite = sprite
         self.function = function
