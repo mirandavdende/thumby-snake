@@ -17,15 +17,16 @@ def startGame():
         6,6,5,0,6,8,12,14,15,13,14,8
     ])
     snake = thumby.Sprite(4, 4, snakeImages)
-    startPos = 50 # Start position
-    length = 8 # length of the snake segments
+    length = 3 # length of the snake segments
     thumby.display.setFPS(2) # Update every 1/2 second
+    PosX = 50 # Start
+    PosY = 18 # Start
 
     while True:
         thumby.display.fill(0) # Clear screen
         snake.setFrame(MOUTH_CLOSED_RIGHT)
-        snake.x = startPos
-        snake.y = 18
+        snake.x = PosX
+        snake.y = PosY
         thumby.display.drawSprite(snake)
         snake.setFrame(BODY_HOR_RIGHT)
         for x in range(length):
@@ -35,7 +36,14 @@ def startGame():
         snake.x -= 4
         thumby.display.drawSprite(snake)
         thumby.display.update()
-        startPos += 1
+        if thumby.buttonU.justPressed():
+            PosY -=4
+        elif thumby.buttonD.justPressed():
+            PosY +=4
+        elif thumby.buttonR.justPressed():
+            PosX +=4
+        elif thumby.buttonL.justPressed():
+            PosX -=4
 
 
 
