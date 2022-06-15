@@ -7,6 +7,28 @@ BODY_HOR_LEFT = const(3)
 BODY_VER_UP = const(4)
 BODY_VER_DOWN = const(5)
 TAIL_RIGHT = const(6)
+APPLE = const(10)
+
+def drawSnake(stamp, snake):
+    thumby.display.fill(0) # Clear screen
+    stamp.setFrame(APPLE)
+    for i in range(len(snake)):
+        pos = snake[i]
+        stamp.x = pos[0]
+        stamp.y = pos[1]
+        thumby.display.drawSprite(stamp)
+    thumby.display.update()
+
+def moveSnake(snake, dX, dY):
+    # Shift all snake parts one position
+    for i in range(len(snake) - 1):
+        snake[i] = snake[i+1]
+    # Move snake head horizontally by increasing X
+    head = snake[len(snake) - 1].copy()
+    head[0] += dX
+    head[1] += dY
+    snake[len(snake) - 1] = head
+    return snake
 
 def startGame():
     # Snake image data is here
@@ -16,34 +38,37 @@ def startGame():
         12,0,0,12,10,6,6,11,13,6,2,5,2,0,
         6,6,5,0,6,8,12,14,15,13,14,8
     ])
-    snake = thumby.Sprite(4, 4, snakeImages)
-    length = 3 # length of the snake segments
+    snakeStamp = thumby.Sprite(4, 4, snakeImages)
     thumby.display.setFPS(2) # Update every 1/2 second
-    PosX = 50 # Start
-    PosY = 18 # Start
+
+    dX = 4
+    dY = 0
+
+    snake = [
+        [22, 30], # Tail end
+        [22, 26], # Body section
+        [22, 22], # Body section
+        [22, 18], # Body section
+        [26, 18], # Body section
+        [26, 14]  # Head
+    ]
 
     while True:
-        thumby.display.fill(0) # Clear screen
-        snake.setFrame(MOUTH_CLOSED_RIGHT)
-        snake.x = PosX
-        snake.y = PosY
-        thumby.display.drawSprite(snake)
-        snake.setFrame(BODY_HOR_RIGHT)
-        for x in range(length):
-            snake.x -= 4
-            thumby.display.drawSprite(snake)
-        snake.setFrame(TAIL_RIGHT)
-        snake.x -= 4
-        thumby.display.drawSprite(snake)
-        thumby.display.update()
+        drawSnake(snakeStamp, snake)
+        snake = moveSnake(snake, dX, dY)
+
         if thumby.buttonU.justPressed():
-            PosY -=4
+            dY = -4
+            dX = 0
         elif thumby.buttonD.justPressed():
-            PosY +=4
+            dY = 4
+            dX = 0
         elif thumby.buttonR.justPressed():
-            PosX +=4
+            dX = 4
+            dY = 0
         elif thumby.buttonL.justPressed():
-            PosX -=4
+            dX = -4
+            dY = 0
 
 
 
