@@ -9,6 +9,9 @@ class Dir:
     LEFT = 2
     RIGHT = 3
 
+    def opposite(dir):
+        return dir ^ 1
+
 
 # Indices into the spritesheet for the different images
 
@@ -87,7 +90,7 @@ def init(wrapper):
             w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [26, 18]),
             Dir.LEFT,
             Dir.UP,
-            True,
+            False,
         ],
         [
             w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [26, 14]),
@@ -114,12 +117,54 @@ def update(keys):
         direction = Dir.RIGHT
 
     snake = moveSnake(snake, direction, w.screenHeight, w.screenWidth)
-    drawSnake(snake)
+    showCorrectFrames(snake)
 
     return 10  # Frame rate, increase to speed up
 
 
-def drawSnake(snake):
+def moveSnake(snake, direction, width, height):
+    # Shift all snake segments one position towards the head
+    for i in range(len(snake) - 1):
+        snake[i][0].setPosition(snake[i + 1][0].getPosition())
+        snake[i][1] = snake[i + 1][1]  # coming from
+        snake[i][2] = snake[i + 1][2]  # going to
+        snake[i][3] = snake[i + 1][3]  # ate something
+
+    # Move snake head one place in the desired direction
+    head = snake[len(snake) - 1]
+    position = head[0].getPosition()
+
+    if direction == Dir.UP:
+        position[1] -= STEP_SIZE
+    if direction == Dir.DOWN:
+        position[1] += STEP_SIZE
+    if direction == Dir.LEFT:
+        position[0] -= STEP_SIZE
+    if direction == Dir.RIGHT:
+        position[0] += STEP_SIZE
+
+    head[2] = direction  # going to
+    head[1] = Dir.opposite(direction)  # coming from
+
+    # Wrap snake around screen
+    if position[0] < 0:
+        position[0] = width - STEP_SIZE
+    if position[0] > width - STEP_SIZE:
+        position[0] = 0
+    if position[1] < 0:
+        position[1] = height - STEP_SIZE
+    if position[1] > height - STEP_SIZE:
+        position[1] = 0
+
+    head[0].setPosition(position)
+
+    # Link second segment up with head direction
+    snake[len(snake) - 2][2] = head[2]
+
+    return snake
+
+
+def showCorrectFrames(snake):
     for i in range(len(snake)):
         sprite = snake[i][0]
         coming_from = snake[i][1]
@@ -191,50 +236,3 @@ def drawSnake(snake):
                 sprite.setFrame(HEAD_RIGHT)
             if coming_from == Dir.RIGHT:
                 sprite.setFrame(HEAD_LEFT)
-
-
-def moveSnake(snake, direction, width, height):
-    # Shift all snake segments one position towards the head
-    for i in range(len(snake) - 1):
-        snake[i][0].setPosition(snake[i + 1][0].getPosition())
-        snake[i][1] = snake[i + 1][1]
-        snake[i][2] = snake[i + 1][2]
-        snake[i][3] = snake[i + 1][3]
-
-    # Move snake head one place in the desired direction
-    head = snake[len(snake) - 1]
-    position = head[0].getPosition()
-
-    if direction == Dir.UP:
-        position[1] -= STEP_SIZE
-        head[1] = Dir.DOWN
-        head[2] = Dir.UP
-    if direction == Dir.DOWN:
-        position[1] += STEP_SIZE
-        head[1] = Dir.UP
-        head[2] = Dir.DOWN
-    if direction == Dir.LEFT:
-        position[0] -= STEP_SIZE
-        head[1] = Dir.RIGHT
-        head[2] = Dir.LEFT
-    if direction == Dir.RIGHT:
-        position[0] += STEP_SIZE
-        head[1] = Dir.LEFT
-        head[2] = Dir.RIGHT
-
-    # Wrap snake around screen
-    if position[0] < 0:
-        position[0] = width - STEP_SIZE
-    if position[0] > width - STEP_SIZE:
-        position[0] = 0
-    if position[1] < 0:
-        position[1] = height - STEP_SIZE
-    if position[1] > height - STEP_SIZE:
-        position[1] = 0
-
-    head[0].setPosition(position)
-
-    # Link second segment up with head direction
-    snake[len(snake) - 2][2] = head[2]
-
-    return snake
