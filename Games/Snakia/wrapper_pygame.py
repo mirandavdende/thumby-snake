@@ -38,11 +38,11 @@ class Sprite(pg.sprite.Sprite):
         self.image = pg.Surface((width, height)).convert()
         self.image.set_colorkey(TRANSPARENT)
         self.rect = self.image.get_rect()
-        self.setFrame(0)
+        self.set_frame(0)
         self.visible = True
-        self.setPosition(position)
+        self.set_position(position)
 
-    def setFrame(self, index):
+    def set_frame(self, index):
         rect = pg.Rect((index * self.rect.width, 0, self.rect.width, self.rect.height))
         self.image.blit(self.spritesheet, (0, 0), rect)
 
@@ -52,11 +52,11 @@ class Sprite(pg.sprite.Sprite):
     def hide(self):
         self.visible = False
 
-    def setPosition(self, position):
+    def set_position(self, position):
         self.rect.x = position[0]
         self.rect.y = position[1]
 
-    def getPosition(self):
+    def get_position(self):
         return [self.rect.x, self.rect.y]
 
     def _draw(self):

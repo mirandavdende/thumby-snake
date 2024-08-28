@@ -91,7 +91,7 @@ def update(keys):
     if w.Key.MENU in keys:
         return change_state(states.MENU_MAIN)
 
-    snake = moveSnake(snake, direction)
+    snake = move_snake(snake, direction)
 
     return framerate
 
@@ -148,7 +148,7 @@ def reset():
     ]
 
     # Select all the right images for the segements of the snake
-    showCorrectFrames(snake)
+    show_correct_frames(snake)
 
     # Add the sprites that make up the snake to the scene
     for segment in snake:
@@ -169,17 +169,17 @@ def get_framerate():
     return framerate
 
 
-def moveSnake(snake, direction):
+def move_snake(snake, direction):
     # Shift all snake segments one position towards the head
     for i in range(len(snake) - 1):
-        snake[i][0].setPosition(snake[i + 1][0].getPosition())
+        snake[i][0].set_position(snake[i + 1][0].get_position())
         snake[i][1] = snake[i + 1][1]  # coming from
         snake[i][2] = snake[i + 1][2]  # going to
         snake[i][3] = snake[i + 1][3]  # ate something
 
     # Move snake head one place in the desired direction
     head = snake[len(snake) - 1]
-    position = head[0].getPosition()
+    position = head[0].get_position()
 
     if direction == Dir.UP:
         position[1] -= STEP_SIZE
@@ -203,16 +203,16 @@ def moveSnake(snake, direction):
     if position[1] > SCREEN_Y + SCREEN_HEIGHT - STEP_SIZE:
         position[1] = SCREEN_Y
 
-    head[0].setPosition(position)
+    head[0].set_position(position)
 
     # Link second segment up with head direction
     snake[len(snake) - 2][2] = head[2]
 
-    showCorrectFrames(snake)
+    show_correct_frames(snake)
     return snake
 
 
-def showCorrectFrames(snake):
+def show_correct_frames(snake):
     for i in range(len(snake)):
         sprite = snake[i][0]
         coming_from = snake[i][1]
@@ -229,58 +229,58 @@ def showCorrectFrames(snake):
             or coming_from == Dir.UP
             and going_to == Dir.LEFT
         ):
-            sprite.setFrame(CORNER_LEFT_UP)
+            sprite.set_frame(CORNER_LEFT_UP)
         if (
             coming_from == Dir.LEFT
             and going_to == Dir.DOWN
             or coming_from == Dir.DOWN
             and going_to == Dir.LEFT
         ):
-            sprite.setFrame(CORNER_LEFT_DOWN)
+            sprite.set_frame(CORNER_LEFT_DOWN)
         if (
             coming_from == Dir.RIGHT
             and going_to == Dir.UP
             or coming_from == Dir.UP
             and going_to == Dir.RIGHT
         ):
-            sprite.setFrame(CORNER_RIGHT_UP)
+            sprite.set_frame(CORNER_RIGHT_UP)
         if (
             coming_from == Dir.RIGHT
             and going_to == Dir.DOWN
             or coming_from == Dir.DOWN
             and going_to == Dir.RIGHT
         ):
-            sprite.setFrame(CORNER_RIGHT_DOWN)
+            sprite.set_frame(CORNER_RIGHT_DOWN)
         if coming_from == Dir.UP and going_to == Dir.DOWN:
-            sprite.setFrame(BODY_VER_DOWN)
+            sprite.set_frame(BODY_VER_DOWN)
         if coming_from == Dir.DOWN and going_to == Dir.UP:
-            sprite.setFrame(BODY_VER_UP)
+            sprite.set_frame(BODY_VER_UP)
         if coming_from == Dir.LEFT and going_to == Dir.RIGHT:
-            sprite.setFrame(BODY_HOR_RIGHT)
+            sprite.set_frame(BODY_HOR_RIGHT)
         if coming_from == Dir.RIGHT and going_to == Dir.LEFT:
-            sprite.setFrame(BODY_HOR_LEFT)
+            sprite.set_frame(BODY_HOR_LEFT)
 
         if eating:
-            sprite.setFrame(FULL_BELLY)
+            sprite.set_frame(FULL_BELLY)
 
         # Are we the tail?
         if i == 0:
             if going_to == Dir.UP:
-                sprite.setFrame(TAIL_UP)
+                sprite.set_frame(TAIL_UP)
             if going_to == Dir.DOWN:
-                sprite.setFrame(TAIL_DOWN)
+                sprite.set_frame(TAIL_DOWN)
             if going_to == Dir.LEFT:
-                sprite.setFrame(TAIL_LEFT)
+                sprite.set_frame(TAIL_LEFT)
             if going_to == Dir.RIGHT:
-                sprite.setFrame(TAIL_RIGHT)
+                sprite.set_frame(TAIL_RIGHT)
 
         # Are we the head?
         if i == len(snake) - 1:
             if coming_from == Dir.UP:
-                sprite.setFrame(HEAD_DOWN)
+                sprite.set_frame(HEAD_DOWN)
             if coming_from == Dir.DOWN:
-                sprite.setFrame(HEAD_UP)
+                sprite.set_frame(HEAD_UP)
             if coming_from == Dir.LEFT:
-                sprite.setFrame(HEAD_RIGHT)
+                sprite.set_frame(HEAD_RIGHT)
             if coming_from == Dir.RIGHT:
-                sprite.setFrame(HEAD_LEFT)
+                sprite.set_frame(HEAD_LEFT)

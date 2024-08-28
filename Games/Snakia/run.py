@@ -1,6 +1,6 @@
-import pygameWrapper
+import wrapper_pygame
 from snakia import init, update
 
-pygameWrapper.run(
-    pygameWrapper, init, update, framerate=10, title="Snakia", windowscale=3
+wrapper_pygame.run(
+    wrapper_pygame, init, update, framerate=10, title="Snakia", windowscale=3
 )

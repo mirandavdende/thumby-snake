@@ -2,7 +2,7 @@ import os
 
 os.chdir("/Games/Snakia")
 
-import thumbyColorWrapper
+import wrapper_thumby_color
 from snakia import init, update
 
-thumbyColorWrapper.run(thumbyColorWrapper, init, update, framerate=10)
+wrapper_thumby_color.run(wrapper_thumby_color, init, update, framerate=10)

@@ -39,9 +39,9 @@ class Sprite(Sprite2DNode):
         self.loop = False
         self.playing = False
         self.layer = 1
-        self.setPosition(position)
+        self.set_position(position)
 
-    def setFrame(self, index):
+    def set_frame(self, index):
         self.frame_current_x = index
 
     def show(self):
@@ -50,13 +50,13 @@ class Sprite(Sprite2DNode):
     def hide(self):
         self.opacity = 0
 
-    def setPosition(self, position):
+    def set_position(self, position):
         self.real_position = position
         self.position = Vector2(
             position[0] + (self.width // 2), position[1] + (self.height // 2)
         )
 
-    def getPosition(self):
+    def get_position(self):
         return [self.real_position[0], self.real_position[1]]
 
     def destroy(self):
@@ -75,7 +75,7 @@ class Square(Rectangle2DNode):
 
 class Scene(Rectangle2DNode):
     def __init__(self):
-        super().__init__(Vector2(0, 0), screenWidth, screenHeight)
+        super().__init__(Vector2(0, 0), screen_width, screen_height)
 
     def add(self, node):
         self.add_child(node)
@@ -122,9 +122,9 @@ def run(
     windowscale=1,
     title="Thumby Pygame Wrapper",
 ):
-    global screenWidth, screenHeight
-    screenWidth = width
-    screenHeight = height
+    global screen_width, screen_height
+    screen_width = width
+    screen_height = height
 
     engine.fps_limit(framerate)
     cam = CameraNode(Vector3(64, 64, 0))
