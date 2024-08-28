@@ -63,39 +63,27 @@ def init(wrapper):
     snake = [
         # Sprite, coming from, going to, ate something
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [22, 30]),
-            Dir.DOWN,
-            Dir.UP,
-            False,
-        ],
-        [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [22, 26]),
-            Dir.DOWN,
-            Dir.UP,
-            False,
-        ],
-        [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [22, 22]),
-            Dir.DOWN,
-            Dir.UP,
-            False,
-        ],
-        [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [22, 18]),
-            Dir.DOWN,
+            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [24, 32]),
+            Dir.LEFT,
             Dir.RIGHT,
             False,
         ],
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [26, 18]),
+            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [28, 32]),
             Dir.LEFT,
-            Dir.UP,
+            Dir.RIGHT,
             False,
         ],
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [26, 14]),
-            Dir.DOWN,
-            Dir.UP,
+            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [32, 32]),
+            Dir.LEFT,
+            Dir.RIGHT,
+            False,
+        ],
+        [
+            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [36, 32]),
+            Dir.LEFT,
+            Dir.RIGHT,
             False,
         ],
     ]
