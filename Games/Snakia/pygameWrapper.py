@@ -96,6 +96,10 @@ class Scene(pg.sprite.Group):
     def hide(self):
         self.visible = False
 
+    def remove_children(self):
+        for entity in self:
+            self.remove(entity)
+
 
 def load_image(file):
     file = os.path.join(main_dir, file)

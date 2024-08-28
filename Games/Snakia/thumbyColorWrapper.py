@@ -90,6 +90,10 @@ class Scene(Rectangle2DNode):
         for i in range(self.get_child_count()):
             self.get_child(i).opacity = 0
 
+    def remove_children(self):
+        for i in range(self.get_child_count()):
+            self.remove_child(self.get_child(i))
+
 
 def color_from_rgb(r, g, b):
     return Color(((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3))
