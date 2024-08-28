@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import pygame as pg
 from math import floor
 
@@ -19,22 +20,27 @@ class Key:
     RIGHT = 3
     A = 4
     B = 5
+    MENU = 6
+    SHOULDER_LEFT = 7
+    SHOULDER_RIGHT = 8
 
 
-entities = []
+TRANSPARENT = (255, 0, 255)
+
+
+scenes = []
 
 
 class Sprite(pg.sprite.Sprite):
     def __init__(self, spritesheet, width, height, position):
-        global entities
-        pg.sprite.Sprite.__init__(self)
+        super().__init__()
         self.spritesheet = spritesheet
         self.image = pg.Surface((width, height)).convert()
+        self.image.set_colorkey(TRANSPARENT)
         self.rect = self.image.get_rect()
         self.setFrame(0)
         self.visible = True
         self.setPosition(position)
-        entities.append(self)
 
     def setFrame(self, index):
         rect = pg.Rect((index * self.rect.width, 0, self.rect.width, self.rect.height))
@@ -53,10 +59,6 @@ class Sprite(pg.sprite.Sprite):
     def getPosition(self):
         return [self.rect.x, self.rect.y]
 
-    def destroy(self):
-        global entities
-        entities.remove(self)
-
     def _draw(self):
         if not self.visible:
             return
@@ -64,22 +66,42 @@ class Sprite(pg.sprite.Sprite):
         display.blit(self.image, self.rect)
 
 
-class Square:
+class Square(pg.sprite.Sprite):
     def __init__(self, x, y, width, height, color):
-        global entities
+        super().__init__()
         self.color = color
         self.rect = pg.Rect(x, y, width, height)
-        entities.append(self)
 
     def _draw(self):
         global display
         pg.draw.rect(display, self.color, self.rect)
 
 
+class Scene(pg.sprite.Group):
+    def __init__(self):
+        global scenes
+        super().__init__()
+        self.visible = True
+        scenes.append(self)
+
+    def _draw(self):
+        if not self.visible:
+            return
+        for entity in self:
+            entity._draw()
+
+    def show(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False
+
+
 def load_image(file):
     file = os.path.join(main_dir, file)
     try:
         surface = pg.image.load(file)
+        surface.set_colorkey(TRANSPARENT)
     except pg.error:
         raise SystemExit(f'Could not load image "{file}" {pg.get_error()}')
     return surface.convert()
@@ -95,6 +117,11 @@ def load_sound(file):
     except pg.error:
         print(f"Warning, unable to load, {file}")
     return None
+
+
+def exit():
+    pg.quit()
+    sys.exit()
 
 
 def run(
@@ -135,7 +162,7 @@ def run(
             if event.type == pg.KEYDOWN:
                 match event.key:
                     case pg.K_ESCAPE:
-                        return pg.quit()
+                        keys.append(Key.MENU)
                     case pg.K_UP:
                         keys.append(Key.UP)
                     case pg.K_DOWN:
@@ -148,11 +175,15 @@ def run(
                         keys.append(Key.A)
                     case pg.K_LCTRL | pg.K_RCTRL:
                         keys.append(Key.B)
+                    case pg.K_LSHIFT:
+                        keys.append(Key.SHOULDER_LEFT)
+                    case pg.K_RSHIFT:
+                        keys.append(Key.SHOULDER_RIGHT)
 
         newRate = update_func(keys)
 
-        for entity in entities:
-            entity._draw()
+        for scene in scenes:
+            scene._draw()
         screen.blit(pg.transform.scale(display, screen.get_rect().size), (0, 0))
         pg.display.flip()
         clock.tick(newRate or framerate)

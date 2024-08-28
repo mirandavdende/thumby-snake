@@ -20,17 +20,22 @@ class Key:
     RIGHT = 3
     A = 4
     B = 5
+    MENU = 6
+    SHOULDER_LEFT = 7
+    SHOULDER_RIGHT = 8
 
 
 class Sprite(Sprite2DNode):
     def __init__(self, spritesheet, width, height, position):
         super().__init__(self)
-        self.transparent_color = Color(0)
+        self.transparent_color = Color(1, 0, 1)
         self.texture = spritesheet
         self.frame_count_x = spritesheet.width // width
         self.frame_count_y = spritesheet.height // height
         self.frame_current_x = 0
         self.frame_current_y = 0
+        self.width = width
+        self.height = height
         self.loop = False
         self.playing = False
         self.layer = 1
@@ -46,10 +51,13 @@ class Sprite(Sprite2DNode):
         self.opacity = 0
 
     def setPosition(self, position):
-        self.position = Vector2(position[0], position[1])
+        self.real_position = position
+        self.position = Vector2(
+            position[0] + (self.width // 2), position[1] + (self.height // 2)
+        )
 
     def getPosition(self):
-        return [self.position.x, self.position.y]
+        return [self.real_position[0], self.real_position[1]]
 
     def destroy(self):
         self.mark_destroy()
@@ -65,6 +73,24 @@ class Square(Rectangle2DNode):
         )
 
 
+class Scene(Rectangle2DNode):
+    def __init__(self):
+        super().__init__(Vector2(0, 0), screenWidth, screenHeight)
+
+    def add(self, node):
+        self.add_child(node)
+
+    def show(self):
+        self.opacity = 1
+        for i in range(self.get_child_count()):
+            self.get_child(i).opacity = 1
+
+    def hide(self):
+        self.opacity = 0
+        for i in range(self.get_child_count()):
+            self.get_child(i).opacity = 0
+
+
 def color_from_rgb(r, g, b):
     return Color(((r & 0b11111000) << 8) | ((g & 0b11111100) << 3) | (b >> 3))
 
@@ -75,6 +101,10 @@ def load_image(file):
 
 def load_sound(file):
     return WaveSoundResource(file)
+
+
+def exit():
+    engine.reset()
 
 
 def run(
@@ -113,6 +143,12 @@ def run(
             keys.append(Key.LEFT)
         if engine_io.RIGHT.is_just_pressed:
             keys.append(Key.RIGHT)
+        if engine_io.MENU.is_just_pressed:
+            keys.append(Key.MENU)
+        if engine_io.LB.is_just_pressed:
+            keys.append(Key.SHOULDER_LEFT)
+        if engine_io.RB.is_just_pressed:
+            keys.append(Key.SHOULDER_RIGHT)
 
         new_rate = update_func(keys)
         engine.fps_limit(new_rate or framerate)

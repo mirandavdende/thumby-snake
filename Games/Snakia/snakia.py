@@ -1,5 +1,23 @@
-# How big is one piece?
+# States
+MENU_MAIN = 0
+MENU_OPTIONS = 1
+PLAYING_GAME = 2
+
+# Global state variables
+state = MENU_MAIN
+gameState = {
+    "framerate": 5,
+    "snake": None,
+    "direction": None,
+    "scenes": {MENU_MAIN: None, MENU_OPTIONS: None, PLAYING_GAME: None},
+}
+
+# Various sizes
 STEP_SIZE = 4
+SCREEN_WIDTH = 84
+SCREEN_HEIGHT = 48
+SCREEN_X = 22
+SCREEN_Y = 36
 
 
 # What directions can we move in?
@@ -50,64 +68,138 @@ MOUSE_RIGHT = 24
 
 
 def init(wrapper):
-    global w, snake, direction, background
+    global w
     w = wrapper
 
-    # Background
-    background = w.Square(0, 0, 128, 128, [151, 198, 6])
+    # Create the background image with the Nokia Phone as a scene that's always visible
+    w.Scene().add(w.Sprite(w.load_image("images/phone.bmp"), 128, 128, [0, 0]))
+
+    init_main_menu()
+
+
+def update(keys):
+    global w, state, gameState
+
+    if state == PLAYING_GAME:
+        if w.Key.UP in keys:
+            gameState["direction"] = Dir.UP
+        if w.Key.DOWN in keys:
+            gameState["direction"] = Dir.DOWN
+        if w.Key.LEFT in keys:
+            gameState["direction"] = Dir.LEFT
+        if w.Key.RIGHT in keys:
+            gameState["direction"] = Dir.RIGHT
+        if w.Key.MENU in keys:
+            return change_state(MENU_MAIN)
+
+        gameState["snake"] = moveSnake(
+            gameState["snake"], gameState["direction"], w.screenHeight, w.screenWidth
+        )
+
+        return gameState["framerate"]
+
+    elif state == MENU_MAIN:
+        if w.Key.MENU in keys:
+            if gameState["snake"]:
+                return change_state(PLAYING_GAME)
+            else:
+                return w.exit()
+        if w.Key.UP in keys:
+            # New game
+            init_game()
+            return change_state(PLAYING_GAME)
+        return 30
+
+
+def change_state(new_state):
+    global state, gameState
+    state = new_state
+
+    # Show the right scene for the new state
+    for i in gameState["scenes"]:
+        if gameState["scenes"][i] is not None:
+            gameState["scenes"][i].hide()
+    if gameState["scenes"][state] is not None:
+        gameState["scenes"][state].show()
+
+    # Return the correct framerate
+    return gameState["framerate"] if state == PLAYING_GAME else 30
+
+
+def init_main_menu():
+    global w, gameState
+
+    # Create a fresh scene to put our menu in
+    scene = w.Scene()
+    gameState["scenes"][MENU_MAIN] = scene
+
+    # Select button
+    scene.add(w.Sprite(w.load_image("images/select.bmp"), 28, 7, [50, 78]))
+
+
+def init_game():
+    global w, background, gameState
+
+    # Create a fresh scene to put our game in
+    scene = w.Scene()
+    gameState["scenes"][PLAYING_GAME] = scene
 
     # Where is our spritesheet?
     spritesheet = w.load_image("images/spritesheet.bmp")
 
     # Initial snake
-    snake = [
+    snake_pos = [SCREEN_X + 12, SCREEN_Y + 8]
+    gameState["snake"] = [
         # Sprite, coming from, going to, ate something
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [24, 32]),
+            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, snake_pos),
             Dir.LEFT,
             Dir.RIGHT,
             False,
         ],
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [28, 32]),
+            w.Sprite(
+                spritesheet,
+                STEP_SIZE,
+                STEP_SIZE,
+                [snake_pos[0] + STEP_SIZE, snake_pos[1]],
+            ),
             Dir.LEFT,
             Dir.RIGHT,
             False,
         ],
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [32, 32]),
+            w.Sprite(
+                spritesheet,
+                STEP_SIZE,
+                STEP_SIZE,
+                [snake_pos[0] + 2 * STEP_SIZE, snake_pos[1]],
+            ),
             Dir.LEFT,
             Dir.RIGHT,
             False,
         ],
         [
-            w.Sprite(spritesheet, STEP_SIZE, STEP_SIZE, [36, 32]),
+            w.Sprite(
+                spritesheet,
+                STEP_SIZE,
+                STEP_SIZE,
+                [snake_pos[0] + 3 * STEP_SIZE, snake_pos[1]],
+            ),
             Dir.LEFT,
             Dir.RIGHT,
             False,
         ],
     ]
+    showCorrectFrames(gameState["snake"])
+    for segment in gameState["snake"]:
+        scene.add(segment[0])
 
     # Initial direction
-    direction = Dir.RIGHT
+    gameState["direction"] = Dir.RIGHT
 
-
-def update(keys):
-    global w, snake, direction
-
-    if w.Key.UP in keys:
-        direction = Dir.UP
-    if w.Key.DOWN in keys:
-        direction = Dir.DOWN
-    if w.Key.LEFT in keys:
-        direction = Dir.LEFT
-    if w.Key.RIGHT in keys:
-        direction = Dir.RIGHT
-
-    snake = moveSnake(snake, direction, w.screenHeight, w.screenWidth)
-    showCorrectFrames(snake)
-
-    return 10  # Frame rate, increase to speed up
+    # Initial frame rate
+    gameState["framerate"] = 5
 
 
 def moveSnake(snake, direction, width, height):
@@ -134,21 +226,22 @@ def moveSnake(snake, direction, width, height):
     head[2] = direction  # going to
     head[1] = Dir.opposite(direction)  # coming from
 
-    # Wrap snake around screen
-    if position[0] < 0:
-        position[0] = width - STEP_SIZE
-    if position[0] > width - STEP_SIZE:
-        position[0] = 0
-    if position[1] < 0:
-        position[1] = height - STEP_SIZE
-    if position[1] > height - STEP_SIZE:
-        position[1] = 0
+    # Wrap snake around virtual screen
+    if position[0] < SCREEN_X:
+        position[0] = SCREEN_X + SCREEN_WIDTH - STEP_SIZE
+    if position[0] > SCREEN_X + SCREEN_WIDTH - STEP_SIZE:
+        position[0] = SCREEN_X
+    if position[1] < SCREEN_Y:
+        position[1] = SCREEN_Y + SCREEN_HEIGHT - STEP_SIZE
+    if position[1] > SCREEN_Y + SCREEN_HEIGHT - STEP_SIZE:
+        position[1] = SCREEN_Y
 
     head[0].setPosition(position)
 
     # Link second segment up with head direction
     snake[len(snake) - 2][2] = head[2]
 
+    showCorrectFrames(snake)
     return snake
 
 
