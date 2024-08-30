@@ -43,6 +43,7 @@ class Sprite(pg.sprite.Sprite):
         self.set_position(position)
 
     def set_frame(self, index):
+        self.frame = index
         rect = pg.Rect((index * self.rect.width, 0, self.rect.width, self.rect.height))
         self.image.blit(self.spritesheet, (0, 0), rect)
 
@@ -52,12 +53,21 @@ class Sprite(pg.sprite.Sprite):
     def hide(self):
         self.visible = False
 
+    def get_position(self):
+        return [self.rect.x, self.rect.y]
+
     def set_position(self, position):
         self.rect.x = position[0]
         self.rect.y = position[1]
 
-    def get_position(self):
-        return [self.rect.x, self.rect.y]
+    def get_dimensions(self):
+        return [self.rect.width, self.rect.height]
+
+    def set_dimensions(self, dimensions):
+        self.rect.width = dimensions[0]
+        self.rect.height = dimensions[1]
+        self.image = pg.Surface((self.rect.width, self.rect.height)).convert()
+        self.set_frame(self.frame)
 
     def _draw(self):
         if not self.visible:
@@ -175,7 +185,7 @@ def run(
                         keys.append(Key.LEFT)
                     case pg.K_RIGHT:
                         keys.append(Key.RIGHT)
-                    case pg.K_SPACE:
+                    case pg.K_SPACE | pg.K_RETURN:
                         keys.append(Key.A)
                     case pg.K_LCTRL | pg.K_RCTRL:
                         keys.append(Key.B)

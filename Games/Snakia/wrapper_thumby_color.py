@@ -10,8 +10,6 @@ from engine_draw import Color
 from engine_resources import TextureResource, WaveSoundResource
 import engine_io
 
-from math import floor
-
 
 class Key:
     UP = 0
@@ -45,10 +43,13 @@ class Sprite(Sprite2DNode):
         self.frame_current_x = index
 
     def show(self):
-        self.opacity = 1
+        self.opacity = 1.0
 
     def hide(self):
-        self.opacity = 0
+        self.opacity = 0.0
+
+    def get_position(self):
+        return [self.real_position[0], self.real_position[1]]
 
     def set_position(self, position):
         self.real_position = position
@@ -56,8 +57,19 @@ class Sprite(Sprite2DNode):
             position[0] + (self.width // 2), position[1] + (self.height // 2)
         )
 
-    def get_position(self):
-        return [self.real_position[0], self.real_position[1]]
+    def get_dimensions(self):
+        return [self.width, self.height]
+
+    def set_dimensions(self, dimensions):
+        self.width = dimensions[0]
+        self.height = dimensions[1]
+        if self.width == 0 or self.height == 0:
+            self.hide()
+            return
+        self.frame_count_x = self.texture.width // self.width
+        self.frame_count_y = self.texture.height // self.height
+        self.set_position(self.real_position)
+        self.show()
 
     def destroy(self):
         self.mark_destroy()

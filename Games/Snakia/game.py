@@ -71,9 +71,6 @@ def init(wrapper, ch_state):
     # Where is our spritesheet?
     spritesheet = w.load_image("images/spritesheet.bmp")
 
-    # Reset to a new game
-    reset()
-
     return scene
 
 
